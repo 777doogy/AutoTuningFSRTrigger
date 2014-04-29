@@ -55,7 +55,7 @@ int value, reading, idx, noise;
 
 unsigned int samples=20;
 
-long fsrReading;
+long fsrReading, fsrValue;
 float fsrAverage , fsrTriggerLevel, fsrRecoveryLevel, fsrNoise;
 
 // Default adjust levels. Tune as required.
