@@ -59,14 +59,14 @@ long fsrReading, fsrValue;
 float fsrAverage , fsrTriggerLevel, fsrRecoveryLevel, fsrNoise;
 
 // Default adjust levels. Tune as required.
-float fsrRecoveryAdjust = 8.5;
-float fsrTriggerAdjust  = 25;
+float fsrRecoveryAdjust = 10;    // adjustment
+float fsrTriggerAdjust  = 1.1;  // Multiplication factor
 
 void setup() {
 
   // Setup Output Pin
   pinMode( OUT , OUTPUT );
-  digitalWrite( OUT, HIGH );
+  digitalWrite( OUT, LOW );
 
   // Setup LED pin
   pinMode( LED, OUTPUT );
@@ -83,31 +83,29 @@ void setup() {
 
   // Prime with a value
   fsrAverage = analogRead( FSR );
+  fsrAverage = analogRead( FSR );
+
+  fsrTriggerLevel=2000;
+  fsrTriggerLevel=2000;
+
+  while ( ( ( fsrTriggerLevel - fsrAverage ) > 150 ) || ( ( fsrRecoveryLevel - fsrAverage) > 150 ) ) {
 
   for( idx=0; idx < samples ; idx++ ) {
     reading = analogRead( FSR );
-
-    if ( reading > fsrAverage ) {
-      noise = reading - fsrAverage;
-    } else {
-      noise = fsrAverage - reading;
-    };
-
-    if ( noise > fsrNoise ) {
-      fsrNoise = ( fsrNoise + noise ) / 2.00 ;
-    } else {
-      fsrNoise = ( ( fsrNoise * 3 ) + noise ) / 2.00;
-    };
-   
     fsrAverage = ( fsrAverage + reading )  / 2.00;
   };
 
   // Triggering should be above the average and noise level, along with the trigger adjust. 
-  fsrTriggerLevel = fsrAverage + fsrNoise + fsrTriggerAdjust;
-
+  fsrTriggerLevel = ( fsrAverage + fsrRecoveryAdjust )  * fsrTriggerAdjust ;
+    
   // Recovery should be at a point between the trigger level and the average reading level.
-  fsrRecoveryLevel = ( fsrTriggerLevel - fsrAverage ) / 2.00;
+  fsrRecoveryLevel = fsrAverage + ( ( fsrTriggerLevel - fsrAverage ) / 3.0) + fsrRecoveryAdjust;
 
+  };
+
+  // All ready? Okay, set the output pin high
+  digitalWrite( OUT, HIGH );
+  
 };
 
 
